@@ -40,3 +40,7 @@ RUN apt-get autoclean -y \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp/pear/
 
+# setup composer and laravel
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+RUN ["chmod", "+x", "post_deploy.sh"]

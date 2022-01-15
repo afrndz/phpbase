@@ -6,7 +6,7 @@ php artisan optimize
 # Run custom scripts
 if [ "$RUN_MIGRATION" = "1" ] ; then
  echo "Run Migration..."
- php artisan migrate
+ php artisan migrate --force
  echo "Migration done.."
 fi
 # start the application

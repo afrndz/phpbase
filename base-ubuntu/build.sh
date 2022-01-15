@@ -1,3 +1,3 @@
 #!/bin/bash
-docker build -t alexfrndz/php8nginxbase:v001 .
+docker build -t alexfrndz/phpnginxbase:8.0-001 .
 

@@ -1,3 +1,3 @@
 #!/bin/bash
-docker build -t alexfrndz/phpnginxbase:8.0-001 .
+docker buildx build --platform=linux/amd64 -t alexfrndz/phpnginxbase:1.0.0 .
 

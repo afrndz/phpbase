@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM ubuntu:focal as main
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -40,12 +40,13 @@ RUN apt-get -y install \
 RUN add-apt-repository -y ppa:ondrej/php && \
   apt-get update
 
+FROM main as phpbuild
 RUN apt-get -y install \
   exiftool \
   protobuf-compiler protobuf-compiler-grpc \
-  php-dev \ 
-  php-pear \
-  php-xdebug \
+  php8.0 \
+  php8.0-common \
+  php8.0-dev \ 
   php8.0-fpm \
   php8.0-mbstring \
   php8.0-dom \
@@ -56,9 +57,12 @@ RUN apt-get -y install \
   php8.0-sqlite3 \
   php8.0-bcmath \
   php8.0-intl \
-  php8.0-mysql
+  php8.0-mysql \
+  php-xml \
+  php8.0-xml 
 
 
+FROM phpbuild as app
 
 COPY ./conf/nginx/default /etc/nginx/sites-enabled/default
 COPY ./conf/post_deploy.sh /var/www/post_deploy.sh
@@ -67,7 +71,9 @@ COPY ./conf/post_deploy.sh /var/www/post_deploy.sh
 RUN curl -sS https://getcomposer.org/installer | php -- \
   --install-dir=/usr/local/bin --filename=composer
 # GRPC
-RUN  pecl install grpc 
+
+
+RUN pecl install grpc
 
 #Enable modules
 RUN cd /etc/php/8.0/mods-available \ 

@@ -2,11 +2,9 @@ FROM ubuntu:focal as main
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && \
-  apt -y upgrade
-
-# install essential packages
-RUN apt-get -y install \
+RUN apt-get upgrade && \
+  apt-get update && apt-get -y install \
+ --no-install-recommends  \
   curl \
   build-essential \
   software-properties-common \
@@ -42,6 +40,7 @@ RUN add-apt-repository -y ppa:ondrej/php && \
 
 FROM main as phpbuild
 RUN apt-get -y install \
+  --fix-missing \
   exiftool \
   protobuf-compiler protobuf-compiler-grpc \
   php8.0 \
@@ -59,19 +58,15 @@ RUN apt-get -y install \
   php8.0-intl \
   php8.0-mysql \
   php-xml \
-  php8.0-xml 
+  php8.0-xml
 
-
-FROM phpbuild as app
 
 COPY ./conf/nginx/default /etc/nginx/sites-enabled/default
 COPY ./conf/post_deploy.sh /var/www/post_deploy.sh
 
-# install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- \
-  --install-dir=/usr/local/bin --filename=composer
-# GRPC
 
+
+FROM phpbuild as app
 
 RUN pecl install grpc
 
@@ -80,7 +75,14 @@ RUN cd /etc/php/8.0/mods-available \
  && echo "extension=grpc.so" > grpc.ini \
  && phpenmod grpc
 
+# install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- \
+  --install-dir=/usr/local/bin --filename=composer
+# GRPC
+
 # NGINX
 RUN apt-get install nginx -y
+
+RUN rm -rf /var/lib/apt/lists/*
 
 RUN ["chmod", "+x", "/var/www/post_deploy.sh"]

@@ -1,4 +1,4 @@
-FROM php:8.0-fpm
+FROM php:8.0-fpm as baseimage
 
 USER root
 
@@ -22,6 +22,8 @@ RUN apt-get update \
     && docker-php-ext-enable exif \
     && docker-php-ext-enable opcache
 
+FROM baseimage
+
 RUN  pecl install grpc  \
     && docker-php-ext-enable grpc 
 
@@ -34,9 +36,6 @@ COPY ./deploy/post_deploy.sh /var/www/post_deploy.sh
 RUN apt-get autoclean -y \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp/pear/
-
-# setup npm
-RUN npm install -g npm@latest
 
 # setup composer and laravel
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer

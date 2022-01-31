@@ -1,2 +1,2 @@
 #!/bin/bash
-docker buildx build --platform=linux/amd64 -t alexfrndz/phpbase:8-fpm .
+docker build -t alexfrndz/phpbase:8-fpm .

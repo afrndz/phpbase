@@ -11,6 +11,9 @@ RUN apt-get update \
     libjpeg-dev libpng-dev libwebp-dev zlib1g-dev libzip-dev gcc g++ make vim unzip curl \
     git jpegoptim optipng pngquant gifsicle locales libonig-dev nodejs npm exiftool  \
     libxml2-dev \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
     && docker-php-ext-configure gd  \
     && docker-php-ext-install gd \
     && apt-get install -y --no-install-recommends libgmp-dev \
@@ -20,7 +23,9 @@ RUN apt-get update \
     && docker-php-ext-install pdo_mysql mbstring pdo \
     && docker-php-ext-install pdo \
     && docker-php-ext-enable exif \
-    && docker-php-ext-enable opcache
+    && docker-php-ext-enable opcache \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) gd
 
 FROM baseimage
 
